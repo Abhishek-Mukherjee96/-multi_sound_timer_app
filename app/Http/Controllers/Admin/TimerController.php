@@ -14,17 +14,32 @@ class TimerController extends Controller
     //GET TIMER LIST
     public function timer_list()
     {
-        $timer_timeline = Timer::latest()->get();
-        $timer = Timer::first();
-        $duration = TimerSegment::where('timer_id', $timer->id)->toArray();
-        //dd($duration);
-        $x = 0;
-        foreach($duration as $durations){
-            $x = $x + $durations['duration'];
+        $timer_timeline = Timer::where('user_id', auth()->user()->id)->latest()->get();
+        //print_r($timer_timeline);die;
+        $timer_segments = [];
 
+        foreach ($timer_timeline as $timer) {
+            $arr = [];
+            $arr['id'] = $timer->id;
+            $arr['timer_title'] = $timer->timer_title;
+            $arr['timer_subhead'] = $timer->timer_subhead;
+            $arr['start_sound'] = $timer->start_sound;
+
+            $obj = TimerSegment::where("timer_id", $timer->id)->get();
+            $minutes = 0;
+            foreach ($obj as $value) {
+                list($hour, $minute) = explode(':', $value->duration);
+                $minutes += $hour * 60;
+                $minutes += $minute;
+            }
+            $hours = floor($minutes / 60);
+            $minutes -= $hours * 60;
+            $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+            $arr['duration'] = $total_dur;
+            array_push($timer_segments, $arr);
+            //return $timer_segments;die;
+            return view('admin.timer.index', compact('timer_segments'));
         }
-        echo $x;die;
-        return view('admin.timer.index', compact('timer_timeline'));
     }
 
     public function add_timer()
@@ -60,7 +75,7 @@ class TimerController extends Controller
                 $image->move($destinationPath, $profileImage);
                 $value['end_sound'] = $profileImage;
             }
-            
+
             $add_timers->timer_id =  $add_timer->id;
             $add_timers->segment_name = $value['segment_name'];
             $add_timers->duration = $value['duration'];
@@ -68,16 +83,17 @@ class TimerController extends Controller
             $add_timers->end_sound = URL::to('/') . '/public/admin/assets/sound/' . $add_timer['end_sound'];
             $add_timers->save();
         }
-        
+
         $req->session()->flash('success', 'Timer Added Successfully.');
         return redirect()->route('timer_list');
     }
 
     //EDIT TIMER
-    public function edit_timer($id){
-        $timer = Timer::where('id',$id)->first();
+    public function edit_timer($id)
+    {
+        $timer = Timer::where('id', $id)->first();
         $edit_timer = TimerSegment::where('timer_segments.timer_id', $timer->id)->get();
         //dd($edit_timer);
-        return view('admin.timer.edit', compact('timer','edit_timer'));
+        return view('admin.timer.edit', compact('timer', 'edit_timer'));
     }
 }

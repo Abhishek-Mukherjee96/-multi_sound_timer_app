@@ -46,12 +46,13 @@
                                                     <th class="wd-15p border-bottom-0">Timer Title</th>
                                                     <th class="wd-15p border-bottom-0">Timer Subhead</th>
                                                     <th class="wd-15p border-bottom-0">Start Sound</th>
+                                                    <th class="wd-15p border-bottom-0">Duration</th>
                                                     <th class="wd-20p border-bottom-0">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @if(isset($timer_timeline))
-                                                @foreach($timer_timeline as $list)
+                                                @if(isset($timer_segments))
+                                                @foreach($timer_segments as $list)
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{$list->timer_title}}</td>
@@ -60,6 +61,9 @@
                                                         <audio controls>
                                                             <source src="{{asset('public/admin/assets/sound/'.$list->start_sound)}}" type="audio/mpeg">
                                                         </audio>
+                                                    </td>
+                                                    <td>
+                                                        {{$list->duration}}
                                                     </td>
                                                     <td>
                                                         <a href="{{route('edit_timer',$list->id)}}" onclick="return confirm('Are you sure to edit?')" class="btn btn-info"><i class="fa fa-pencil"></i></a>
