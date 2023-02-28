@@ -28,6 +28,7 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/delete-timer', [ApiTimerController::class, 'delete_timer'])->name('delete_timer');
     Route::post('/duplicate-timer', [ApiTimerController::class, 'duplicate_timer'])->name('duplicate_timer');
     Route::post('/favourite', [ApiTimerController::class, 'favourite'])->name('favourite');
+    Route::get('/favourite-tab', [ApiTimerController::class, 'favourite_tab'])->name('favourite_tab');
 
 
     //NOTIFICATIONS ROUTE

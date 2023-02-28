@@ -17,10 +17,17 @@ class TimerController extends Controller
     {
         $timer_timeline = Timer::where('user_id', auth()->user()->id)->where('status','=',1)->latest()->get();
         //print_r($timer_timeline);die;
+       
+        
         $timer_segments = [];
 
         foreach ($timer_timeline as $timer) {
             $arr = [];
+            if ($timer->favourite == 1) {
+               $arr['stat'] =  true;
+            } else {
+                $arr['stat'] = false;
+            }
             $arr['id'] = $timer->id;
             $arr['timer_title'] = $timer->timer_title;
             $arr['timer_subhead'] = $timer->timer_subhead;
@@ -136,7 +143,48 @@ class TimerController extends Controller
         $timer->favourite = 1;
         $timer->created_at = Carbon::now();
         $timer->save();
+        
         return response()->json(['success' => true, 'message' => 'Timer is now favourite.']);
         
     }
+
+    public function favourite_tab()
+    {
+        $timer_timeline = Timer::where('user_id', auth()->user()->id)->where('status', '=', 1)->where('favourite','=',1)->latest()->get();
+        //print_r($timer_timeline);die;
+
+
+        $timer_segments = [];
+
+        foreach ($timer_timeline as $timer) {
+            $arr = [];
+            if ($timer->favourite == 1) {
+                $arr['stat'] =  true;
+            } else {
+                $arr['stat'] = false;
+            }
+            $arr['id'] = $timer->id;
+            $arr['timer_title'] = $timer->timer_title;
+            $arr['timer_subhead'] = $timer->timer_subhead;
+            $arr['start_sound'] = $timer->start_sound;
+
+            $obj = TimerSegment::where("timer_id", $timer->id)->get();
+            $minutes = 0;
+            foreach ($obj as $value) {
+                list($hour, $minute) = explode(':', $value->duration);
+                $minutes += $hour * 60;
+                $minutes += $minute;
+            }
+            $hours = floor($minutes / 60);
+            $minutes -= $hours * 60;
+            $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+            $arr['duration'] = $total_dur;
+            array_push($timer_segments, $arr);
+        }
+
+        return response()->json(['timer_segments' => $timer_segments], 200);
+    }
+
+    //FAVOURITE TAB
+
 }
