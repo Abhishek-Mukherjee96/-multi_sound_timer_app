@@ -37,7 +37,7 @@ class TimerController extends Controller
             $total_dur = sprintf('%02d:%02d', $hours, $minutes);
             $arr['duration'] = $total_dur;
             array_push($timer_segments, $arr);
-            //return $timer_segments;die;
+            // dd($timer_segments);
             return view('admin.timer.index', compact('timer_segments'));
         }
     }
@@ -64,6 +64,8 @@ class TimerController extends Controller
         $add_timer->timer_title = $req->timer_title;
         $add_timer->timer_subhead = $req->timer_subhead;
         $add_timer->start_sound = URL::to('/') . '/public/admin/assets/sound/' . $add_timer['start_sound'];
+        $add_timer->status = 1;
+        $add_timer->favourite = 0;
         $add_timer->save();
 
         foreach ($req->addmore as $value) {

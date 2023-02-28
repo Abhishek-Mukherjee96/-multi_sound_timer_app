@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('timer_title');
             $table->string('timer_subhead');
             $table->string('start_sound');
+            $table->string('status');
+            $table->string('favourite');
             $table->timestamps();
         });
     }

@@ -129,4 +129,14 @@ class TimerController extends Controller
         $delete_timer  = DB::table('timers')->where('id', $req->id)->update($data);
         return response()->json(['success'=>true, 'message' => 'Timer Deleted Successfully.']);
     }
+
+    //FAVOURITE TIMER
+    public function favourite(Request $req){
+        $timer = Timer::find($req->id);
+        $timer->favourite = 1;
+        $timer->created_at = Carbon::now();
+        $timer->save();
+        return response()->json(['success' => true, 'message' => 'Timer is now favourite.']);
+        
+    }
 }
