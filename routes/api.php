@@ -30,7 +30,6 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/favourite', [ApiTimerController::class, 'favourite'])->name('favourite');
     Route::get('/favourite-tab', [ApiTimerController::class, 'favourite_tab'])->name('favourite_tab');
 
-
     //NOTIFICATIONS ROUTE
     Route::get('/notification-list',[NotificationController::class,'notification_list'])->name('notification_list');
     Route::post('/notification-action',[NotificationController::class,'notification_action'])->name('notification_action');

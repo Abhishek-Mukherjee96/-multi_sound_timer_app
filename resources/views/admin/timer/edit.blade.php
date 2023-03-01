@@ -28,29 +28,29 @@
                     <div class="col-xl-12 col-lg-12 col-md-12">
                         <div class="card">
                             <div class="card-header bg-primary text-white">
-                                <h3 class="card-title">Add Timer</h3>
+                                <h3 class="card-title">Edti Timer</h3>
                             </div>
                             <div class="card-body pb-2">
-                                <form action="{{route('add_timer_action')}}" enctype="multipart/form-data" method="post">
+                                <form action="{{route('edit_timer_action',$timer->id)}}" enctype="multipart/form-data" method="post">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label><strong>Timer Title</strong> <span class="required_star">*</span></label>
-                                            <input class="form-control mb-4" value="{{$timer->timer_title}}" placeholder="Timer Title" type="text" name="timer_title">
+                                            <input class="form-control mb-4" value="{{@$timer->timer_title}}" placeholder="Timer Title" type="text" name="timer_title">
                                             @error('timer_title')
                                             <span class="text text-danger">{{$message}}</span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label><strong>Timer Subhead <span class="required_star">*</span></strong></label>
-                                            <input class="form-control mb-4" value="{{$timer->timer_subhead}}" placeholder="Timer Subhead" type="text" name="timer_subhead">
+                                            <input class="form-control mb-4" value="{{@$timer->timer_subhead}}" placeholder="Timer Subhead" type="text" name="timer_subhead">
                                             @error('timer_subhead')
                                             <span class="text text-danger">{{$message}}</span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label><strong>Start Sound <span class="required_star">*</span></strong></label>
-                                            <input class="form-control mb-4" value="{{$timer->start_sound}}" placeholder="Start Sound" type="file" name="start_sound">
+                                            <input class="form-control mb-4" value="{{@$timer->start_sound}}" placeholder="Start Sound" type="text" name="start_sound">
                                             @error('start_sound')
                                             <span class="text text-danger">{{$message}}</span>
                                             @enderror
@@ -68,20 +68,24 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @if(isset($edit_timer))
+                                                    @foreach($edit_timer as $list)
                                                     <tr>
                                                         <td>
-                                                            <input type="text" name="addmore[0][segment_name]" value="{{$edit_timer[0]['segment_name']}}" class="form-control" placeholder="Segment Name">
+                                                            <input type="text" name="addmore[0][segment_name]" value="{{@$list['segment_name']}}" class="form-control" placeholder="Segment Name">
                                                         </td>
                                                         <td>
-                                                            <input type="time" name="addmore[0][duration]" value="{{$edit_timer[0]['duration']}}" class="form-control" placeholder="Duration">
+                                                            <input type="time" name="addmore[0][duration]" value="{{@$list['duration']}}" class="form-control" placeholder="Duration">
                                                         </td>
                                                         <td>
-                                                            <input type="file" name="addmore[0][end_sound]" value="{{$edit_timer[0]['end_sound']}}" class="form-control">
+                                                            <input type="text" name="addmore[0][end_sound]" value="{{@$list['end_sound']}}" class="form-control">
                                                         </td>
                                                         <td>
                                                             <button type="button" name="add" id="add" class="btn btn-success"><i class="fa fa-plus"></i></button>
                                                         </td>
                                                     </tr>
+                                                    @endforeach
+                                                    @endif
                                                 </tbody>
                                             </table>
                                         </div>
@@ -109,7 +113,10 @@
                 $("#add").click(function() {
                     //console.log("ok");
                     ++i;
-                    $("#example1").append('<tr>@foreach($edit_timer as $list)<td><input type="text" name="addmore[' + i + '][segment_name]" placeholder="Segment Name" value="{{$list->segment_name}}" class="form-control" /></td><td><input type="time" name="addmore[' + i + '][duration]" value="{{$list->duration}}" placeholder="Duration" class="form-control" /></td><td><input type="file" name="addmore[' + i + '][end_sound]" value="{{$list->end_sound}}" class="form-control" /></td><td><button type="button" class="btn btn-danger remove-tr"><i class="fa fa-trash"></i></button></td>@endforeach</tr>');
+                    //$("#example1").append('<tr>@foreach($edit_timer as $list)<td><input type="text" name="addmore[' + i + '][segment_name]" placeholder="Segment Name" value="{{$list->segment_name}}" class="form-control" /></td><td><input type="time" name="addmore[' + i + '][duration]" value="{{$list->duration}}" placeholder="Duration" class="form-control" /></td><td><input type="file" name="addmore[' + i + '][end_sound]" value="{{$list->end_sound}}" class="form-control" /></td><td><button type="button" class="btn btn-danger remove-tr"><i class="fa fa-trash"></i></button></td>@endforeach</tr>');
+
+                    $("#example1").append('<tr><td><input type="text" name="addmore[' + i + '][segment_name]" placeholder="Segment Name" class="form-control" /></td><td><input type="time" name="addmore[' + i + '][duration]" placeholder="Duration" class="form-control" /></td><td><input type="text" name="addmore[' + i + '][end_sound]" class="form-control" /></td><td><button type="button" class="btn btn-danger remove-tr"><i class="fa fa-trash"></i></button></td></tr>');
+
                 });
                 $(document).on('click', '.remove-tr', function() {
                     $(this).parents('tr').remove();

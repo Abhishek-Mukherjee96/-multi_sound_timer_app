@@ -50,7 +50,7 @@
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label><strong>Start Sound <span class="required_star">*</span></strong></label>
-                                            <input class="form-control mb-4" value="{{old('start_sound')}}" placeholder="Start Sound" type="file" name="start_sound">
+                                            <input class="form-control mb-4" value="{{old('start_sound')}}" placeholder="Start Sound" type="text" name="start_sound">
                                             @error('start_sound')
                                             <span class="text text-danger">{{$message}}</span>
                                             @enderror
@@ -76,7 +76,7 @@
                                                             <input type="time" name="addmore[0][duration]" class="form-control" placeholder="Duration">
                                                         </td>
                                                         <td>
-                                                            <input type="file" name="addmore[0][end_sound]" class="form-control">
+                                                            <input type="text" name="addmore[0][end_sound]" class="form-control">
                                                         </td>
                                                         <td>
                                                             <button type="button" name="add" id="add" class="btn btn-success"><i class="fa fa-plus"></i></button>
@@ -109,7 +109,7 @@
                 $("#add").click(function() {
                     //console.log("ok");
                     ++i;
-                    $("#example1").append('<tr><td><input type="text" name="addmore[' + i + '][segment_name]" placeholder="Segment Name" class="form-control" /></td><td><input type="time" name="addmore[' + i + '][duration]" placeholder="Duration" class="form-control" /></td><td><input type="file" name="addmore[' + i + '][end_sound]" class="form-control" /></td><td><button type="button" class="btn btn-danger remove-tr"><i class="fa fa-trash"></i></button></td></tr>');
+                    $("#example1").append('<tr><td><input type="text" name="addmore[' + i + '][segment_name]" placeholder="Segment Name" class="form-control" /></td><td><input type="time" name="addmore[' + i + '][duration]" placeholder="Duration" class="form-control" /></td><td><input type="text" name="addmore[' + i + '][end_sound]" class="form-control" /></td><td><button type="button" class="btn btn-danger remove-tr"><i class="fa fa-trash"></i></button></td></tr>');
                 });
 
                 $(document).on('click', '.remove-tr', function() {

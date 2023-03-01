@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/add-timer', [TimerController::class, 'add_timer'])->name('add_timer');
     Route::post('/add-timer-action', [TimerController::class, 'add_timer_action'])->name('add_timer_action');
     Route::get('/edit-timer/{id}', [TimerController::class, 'edit_timer'])->name('edit_timer');
+    Route::get('/edit-timer-action/{id}', [TimerController::class, 'edit_timer_action'])->name('edit_timer_action');
 
     //SOUND ROUTE
     Route::get('sound-list', [SoundController::class, 'sound_list'])->name('sound_list');
