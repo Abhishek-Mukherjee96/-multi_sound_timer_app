@@ -63,16 +63,17 @@ class TimerController extends Controller
         $add_timer->favourite = 0;
         $add_timer->save();
         //print_r($req->addmore);die;
-        foreach ($req->addmore as $value) {
-            $add_timers = new TimerSegment();
+        for ($i = 0; $i < sizeof($req->seg_name); $i++) {
 
+            $add_timers = new TimerSegment();
             $add_timers->timer_id =  $add_timer->id;
-            $add_timers->segment_name = $value['s_Name'];
-            $add_timers->duration = $value['s_Dur'];
-            $add_timers->end_sound = $value['s_Song'];
+            $add_timers->segment_name = $req->seg_name[$i];
+            $add_timers->duration = $req->seg_dur[$i];
+            $add_timers->end_sound = $req->seg_end[$i];
             $add_timers->save();
         }
-        return response()->json(['success' => true, 'message' => 'Timer Added Successfully.']);
+        return response()->json([
+            'success' => true, 'message' => 'Timer Added Successfully.']);
     }
 
     //DUPLICATE TIMER

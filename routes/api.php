@@ -3,6 +3,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\SoundController;
 use App\Http\Controllers\Api\TimerController as ApiTimerController;
+use App\Http\Middleware\LogRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,4 +38,5 @@ Route::middleware('auth:api')->group(function(){
     //SOUND ROUTE
     Route::get('sound-list',[SoundController::class,'sound_list'])->name('sound_list');
     Route::post('select-sound', [SoundController::class,'select_sound'])->name('select_sound');
+
 });
