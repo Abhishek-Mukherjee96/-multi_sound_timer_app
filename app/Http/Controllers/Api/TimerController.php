@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Sound;
 use App\Models\Timer;
 use App\Models\TimerSegment;
 use Carbon\Carbon;
@@ -33,6 +34,7 @@ class TimerController extends Controller
             $arr['start_sound'] = $timer->start_sound;
 
             $obj = TimerSegment::where("timer_id", $timer->id)->get();
+
             $minutes = 0;
             foreach ($obj as $value) {
                 list($hour, $minute) = explode(':', $value->duration);
@@ -44,6 +46,30 @@ class TimerController extends Controller
             $total_dur = sprintf('%02d:%02d', $hours, $minutes);
             $arr['duration'] = $total_dur;
             array_push($timer_segments, $arr);
+        }
+
+        return response()->json(['timer_segments' => $timer_segments], 200);
+    }
+
+    //TIMER DETAILS
+    public function timer_details(Request $req)
+    {
+        $timer_timeline = Timer::join('sounds', 'sounds.id', '=', 'timers.start_sound')->select('timers.id', 'timers.timer_title', 'timers.timer_subhead', 'sounds.sound_name')->where('timers.id', '=', $req->id)->first();
+        //print_r($timer_timeline);die;
+
+        $timer_segments['fragments'] = array();
+
+        $timer_segments['timer_title'] = $timer_timeline->timer_title;
+        $timer_segments['timer_subhead'] = $timer_timeline->timer_subhead;
+        $timer_segments['start_sound'] = $timer_timeline->sound_name;
+
+        $obj = TimerSegment::join('sounds', 'sounds.id', '=', 'timer_segments.end_sound')->select('timer_segments.segment_name', 'timer_segments.duration', 'sounds.sound_name')->where("timer_segments.timer_id", $timer_timeline->id)->get();
+        foreach ($obj as $val) {
+            $arr1 = [];
+            $arr1['name'] = $val->segment_name;
+            $arr1['duration'] = $val->duration;
+            $arr1['sound_name'] = $val->sound_name;
+            array_push($timer_segments['fragments'], $arr1);
         }
 
         return response()->json(['timer_segments' => $timer_segments], 200);
@@ -63,6 +89,7 @@ class TimerController extends Controller
         $add_timer->favourite = 0;
         $add_timer->save();
         //print_r($req->addmore);die;
+
         for ($i = 0; $i < sizeof($req->seg_name); $i++) {
 
             $add_timers = new TimerSegment();
@@ -72,8 +99,10 @@ class TimerController extends Controller
             $add_timers->end_sound = $req->seg_end[$i];
             $add_timers->save();
         }
+
         return response()->json([
-            'success' => true, 'message' => 'Timer Added Successfully.']);
+            'success' => true, 'message' => 'Timer Added Successfully.'
+        ]);
     }
 
     //DUPLICATE TIMER
