@@ -54,7 +54,7 @@ class TimerController extends Controller
     //TIMER DETAILS
     public function timer_details(Request $req)
     {
-        $timer_timeline = Timer::join('sounds', 'sounds.id', '=', 'timers.start_sound')->select('timers.id', 'timers.timer_title', 'timers.timer_subhead', 'sounds.sound_name')->where('timers.id', '=', $req->id)->first();
+        $timer_timeline = Timer::join('sounds', 'sounds.id', '=', 'timers.start_sound')->select('timers.id', 'timers.timer_title', 'timers.timer_subhead', 'sounds.sound_name', 'sounds.file')->where('timers.id', '=', $req->id)->first();
         //print_r($timer_timeline);die;
 
         $timer_segments['fragments'] = array();
@@ -62,13 +62,17 @@ class TimerController extends Controller
         $timer_segments['timer_title'] = $timer_timeline->timer_title;
         $timer_segments['timer_subhead'] = $timer_timeline->timer_subhead;
         $timer_segments['start_sound'] = $timer_timeline->sound_name;
+        $timer_segments['file'] = $timer_timeline->file;
 
-        $obj = TimerSegment::join('sounds', 'sounds.id', '=', 'timer_segments.end_sound')->select('timer_segments.segment_name', 'timer_segments.duration', 'sounds.sound_name')->where("timer_segments.timer_id", $timer_timeline->id)->get();
+        $obj = TimerSegment::join('sounds', 'sounds.id', '=', 'timer_segments.end_sound')->select('timer_segments.id','timer_segments.segment_name', 'timer_segments.duration', 'sounds.sound_name', 'sounds.file')->where("timer_segments.timer_id", $timer_timeline->id)->get();
+
         foreach ($obj as $val) {
             $arr1 = [];
+            $arr1['id'] = $val->id;
             $arr1['name'] = $val->segment_name;
             $arr1['duration'] = $val->duration;
             $arr1['sound_name'] = $val->sound_name;
+            $arr1['file'] = $val->file;
             array_push($timer_segments['fragments'], $arr1);
         }
 
@@ -84,7 +88,7 @@ class TimerController extends Controller
         $add_timer->user_id = auth()->user()->id;
         $add_timer->timer_title = $req->timer_title;
         $add_timer->timer_subhead = $req->timer_subhead;
-        $add_timer->start_sound = $req->start_sound;
+        $add_timer->file = $req->start_sound;
         $add_timer->status = 1;
         $add_timer->favourite = 0;
         $add_timer->save();
