@@ -27,6 +27,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/timer-list', [ApiTimerController::class, 'timer_list'])->name('timer_list');
     Route::post('/timer-details', [ApiTimerController::class, 'timer_details'])->name('timer_details');
     Route::post('/add-timer-action', [ApiTimerController::class, 'add_timer_action'])->name('add_timer_action');
+    Route::post('/edit-timer-action', [ApiTimerController::class, 'edit_timer_action'])->name('edit_timer_action');
     Route::post('/delete-timer', [ApiTimerController::class, 'delete_timer'])->name('delete_timer');
     Route::post('/duplicate-timer', [ApiTimerController::class, 'duplicate_timer'])->name('duplicate_timer');
     Route::post('/favourite', [ApiTimerController::class, 'favourite'])->name('favourite');

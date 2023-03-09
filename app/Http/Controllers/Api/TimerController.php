@@ -54,24 +54,24 @@ class TimerController extends Controller
     //TIMER DETAILS
     public function timer_details(Request $req)
     {
-        $timer_timeline = Timer::join('sounds', 'sounds.id', '=', 'timers.start_sound')->select('timers.id', 'timers.timer_title', 'timers.timer_subhead', 'sounds.sound_name', 'sounds.file')->where('timers.id', '=', $req->id)->first();
-        //print_r($timer_timeline);die;
-
+        $timer_timeline = Timer::select('timers.id', 'timers.timer_title', 'timers.timer_subhead', 'timers.start_sound')->where('timers.id', '=', $req->id)->first();
+        // print_r($timer_timeline);
         $timer_segments['fragments'] = array();
 
         $timer_segments['timer_title'] = $timer_timeline->timer_title;
         $timer_segments['timer_subhead'] = $timer_timeline->timer_subhead;
-        $timer_segments['start_sound'] = $timer_timeline->sound_name;
-        $timer_segments['file'] = $timer_timeline->file;
+        $timer_segments['start_sound'] = $timer_timeline->start_sound;
+        //$timer_segments['file'] = $timer_timeline->file;
+        //return $timer_segments;die;
 
-        $obj = TimerSegment::join('sounds', 'sounds.id', '=', 'timer_segments.end_sound')->select('timer_segments.id','timer_segments.segment_name', 'timer_segments.duration', 'sounds.sound_name', 'sounds.file')->where("timer_segments.timer_id", $timer_timeline->id)->get();
+        $obj = TimerSegment::select('timer_segments.id', 'timer_segments.segment_name', 'timer_segments.duration', 'timer_segments.end_sound', 'sounds.file')->join('sounds', 'sounds.id','=', 'timer_segments.end_sound')->where("timer_segments.timer_id", $timer_timeline->id)->get();
 
         foreach ($obj as $val) {
             $arr1 = [];
             $arr1['id'] = $val->id;
             $arr1['name'] = $val->segment_name;
             $arr1['duration'] = $val->duration;
-            $arr1['sound_name'] = $val->sound_name;
+            $arr1['sound_name'] = $val->end_sound;
             $arr1['file'] = $val->file;
             array_push($timer_segments['fragments'], $arr1);
         }
@@ -107,6 +107,43 @@ class TimerController extends Controller
         return response()->json([
             'success' => true, 'message' => 'Timer Added Successfully.'
         ]);
+    }
+
+    //UPDATE TIMER
+    public function edit_timer_action(Request $req)
+    {
+        $update_timer = Timer::where("id", $req->timer_id)->update([
+            "timer_title" => $req->timer_title,
+            "timer_subhead" => $req->timer_subhead,
+            "start_sound" => $req->start_sound,
+            "status" => 1,
+            "favourite" => 0,
+        ]);
+
+        for ($i = 0; $i < sizeof($req->old_seg_name); $i++) {
+         //  echo $req->old_seg_ids[$i];
+            TimerSegment::where("id", $req->old_seg_ids[$i])->update([
+                "segment_name" => $req->old_seg_name[$i],
+                "duration" => $req->old_seg_dur[$i],
+                "end_sound" => $req->old_seg_end[$i],
+            ]);
+        }
+        if(isset($req->seg_name)){
+            for ($i = 0; $i < sizeof($req->seg_name); $i++) {
+                $new_timer_seg = new TimerSegment();
+                $new_timer_seg->timer_id = $req->timer_id;
+                $new_timer_seg->segment_name = $req->seg_name[$i];
+                $new_timer_seg->duration = $req->seg_dur[$i];
+                $new_timer_seg->end_sound = $req->seg_end[$i];
+                $new_timer_seg->save();
+            }
+        }else{
+            
+        }
+
+        return response()->json([
+                'success' => true, 'message' => 'Timer Updated Successfully.'
+            ]);
     }
 
     //DUPLICATE TIMER
