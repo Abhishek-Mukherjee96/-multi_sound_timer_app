@@ -88,7 +88,7 @@ class TimerController extends Controller
         $add_timer->user_id = auth()->user()->id;
         $add_timer->timer_title = $req->timer_title;
         $add_timer->timer_subhead = $req->timer_subhead;
-        $add_timer->file = $req->start_sound;
+        $add_timer->start_sound = $req->start_sound;
         $add_timer->status = 1;
         $add_timer->favourite = 0;
         $add_timer->save();
@@ -140,7 +140,7 @@ class TimerController extends Controller
         }else{
             
         }
-
+ 
         return response()->json([
                 'success' => true, 'message' => 'Timer Updated Successfully.'
             ]);

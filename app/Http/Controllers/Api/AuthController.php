@@ -52,6 +52,8 @@ class AuthController extends Controller
                 'message' => $validator->errors()
             ];
             return response()->json($response, 400);
+            // $message = $validator->errors();
+            // return response()->json(['success' => false, 'message' => $message], 200);
         }
 
         $add_user = new User();
@@ -61,6 +63,8 @@ class AuthController extends Controller
             $profileImage = rand() . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $add_user['image'] = "$profileImage";
+        }else{
+            $add_user->image = '';
         }
 
         $add_user->user_type = 'user';
@@ -176,16 +180,29 @@ class AuthController extends Controller
             'email' => $req->email,
             'password' => $req->password,
             'is_verified' => 1,
-            'status' => 1
+            'status' => 1,
+            
         ];
 
-        if (auth()->attempt($data)) {
+        if(auth()->attempt($data) && auth()->user()->account_type == 1) {
             $id = auth()->user()->id;
             $user_info = auth()->user();
             $token = auth()->user()->createToken('timer_app')->accessToken;
             $sound = Sound::where('id', 1)->first();
-            return response()->json(['user_id' => $id,'sound' => $sound, 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
-        } else {
+            return response()->json(['user_id' => $id,'sound' => $sound, 'account'=> 'Free Account - 3 Timers', 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
+        }elseif(auth()->attempt($data) && auth()->user()->account_type == 2){
+            $id = auth()->user()->id;
+            $user_info = auth()->user();
+            $token = auth()->user()->createToken('timer_app')->accessToken;
+            $sound = Sound::where('id', 1)->first();
+            return response()->json(['user_id' => $id, 'sound' => $sound, 'account' => 'Subscription - Monthly', 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
+        }elseif(auth()->attempt($data) && auth()->user()->account_type == 3) {
+            $id = auth()->user()->id;
+            $user_info = auth()->user();
+            $token = auth()->user()->createToken('timer_app')->accessToken;
+            $sound = Sound::where('id', 1)->first();
+            return response()->json(['user_id' => $id, 'sound' => $sound, 'account' => 'Subscription - Yearly', 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
+        }else{
             return response()->json(['message' => 'Invalid email & password'], 400);
         }
     }
