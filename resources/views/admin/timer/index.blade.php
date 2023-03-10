@@ -45,7 +45,6 @@
                                                     <th class="wd-15p border-bottom-0">#</th>
                                                     <th class="wd-15p border-bottom-0">Timer Title</th>
                                                     <th class="wd-15p border-bottom-0">Timer Subhead</th>
-                                                    <th class="wd-15p border-bottom-0">Start Sound</th>
                                                     <th class="wd-20p border-bottom-0">Action</th>
                                                 </tr>
                                             </thead>
@@ -56,11 +55,6 @@
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{$list->timer_title}}</td>
                                                     <td>{{$list->timer_subhead}}</td>
-                                                    <td>
-                                                        <audio controls>
-                                                            <source src="{{$list->start_sound}}" type="audio/mpeg">
-                                                        </audio>
-                                                    </td>
                                                     <td>
                                                         <a href="{{route('edit_timer',$list->id)}}" onclick="return confirm('Are you sure to edit?')" class="btn btn-info"><i class="fa fa-pencil"></i></a>
                                                         <a href="#" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fa fa-trash"></i></a>

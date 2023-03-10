@@ -47,13 +47,16 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $response = [
-                'success' => false,
-                'message' => $validator->errors()
-            ];
-            return response()->json($response, 400);
+            // $response = [
+            //     'success' => false,
+            //     'message' => $validator->errors()
+            // ];
+            // return response()->json($response, 400);
             // $message = $validator->errors();
             // return response()->json(['success' => false, 'message' => $message], 200);
+
+            $response = ["message" => 'Email already exists.'];
+            return json_encode($response);
         }
 
         $add_user = new User();
