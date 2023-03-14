@@ -214,37 +214,44 @@ class AuthController extends Controller
     }
 
     //USER INFO
-    public function user_info()
+    public function user_info(Request $request)
     {
-        $user_info = auth()->user();
-        $account_type = $user_info->account_type;
-        $find_us = $user_info->find_us;
-        $account = AccountType::where('id','=', $account_type)->first();
-        $find_us = FindUs::where('id','=', $find_us)->first();
-        if($user_info->card_number != NULL){
-            $card_number = decrypt($user_info->card_number);
+        $token = $request->bearerToken();
+        $check_token = User::where('remember_token', $token)->first();
+        if($check_token){
+            $user_info = auth()->user();
+            $account_type = $user_info->account_type;
+            $find_us = $user_info->find_us;
+            $account = AccountType::where('id', '=', $account_type)->first();
+            $find_us = FindUs::where('id', '=', $find_us)->first();
+            if ($user_info->card_number != NULL) {
+                $card_number = decrypt($user_info->card_number);
+            } else {
+                $card_number = '';
+            }
+
+            if ($user_info->security_code != NULL) {
+                $security_code = decrypt($user_info->security_code);
+            } else {
+                $security_code = '';
+            }
+
+            if ($user_info->exp_date != NULL) {
+                $expiry_date = decrypt($user_info->exp_date);
+            } else {
+                $expiry_date = '';
+            }
+
+            if ($user_info->image != NULL) {
+                $image = URL::to('/') . '/public/admin/assets/user-profile/' . $user_info->image;
+            } else {
+                $image = '';
+            }
+            return response()->json(['image' => $image, 'user_info' => $user_info, 'card_number' => $card_number, 'security_code' => $security_code, 'expiry_date' => $expiry_date, 'account_type' => $account, 'find_us' => $find_us], 200);
         }else{
-            $card_number = '';
-        }
-
-        if ($user_info->security_code != NULL) {
-            $security_code = decrypt($user_info->security_code);
-        } else {
-            $security_code = '';
-        }
-
-        if ($user_info->exp_date != NULL) {
-            $expiry_date = decrypt($user_info->exp_date);
-        } else {
-            $expiry_date = '';
+            return response()->json(['message' => 'You are not authorized.'], 400);
         }
         
-        if($user_info->image != NULL){
-            $image = URL::to('/') . '/public/admin/assets/user-profile/' . $user_info->image;
-        }else{
-            $image = '';
-        }
-        return response()->json(['image'=> $image, 'user_info' => $user_info, 'card_number'=> $card_number, 'security_code' => $security_code, 'expiry_date'=> $expiry_date, 'account_type'=> $account, 'find_us'=> $find_us], 200);
     }
 
     //EDIT ACCOUNT 
