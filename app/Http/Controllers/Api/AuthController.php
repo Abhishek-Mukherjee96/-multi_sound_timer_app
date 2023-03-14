@@ -61,14 +61,14 @@ class AuthController extends Controller
 
         $add_user = new User();
 
-        if ($image = $req->file('image')) {
-            $destinationPath = 'public/admin/assets/user-profile';
-            $profileImage = rand() . "." . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $profileImage);
-            $add_user['image'] = "$profileImage";
-        }else{
-            $add_user->image = '';
-        }
+        // if ($image = $req->file('image')) {
+        //     $destinationPath = 'public/admin/assets/user-profile';
+        //     $profileImage = rand() . "." . $image->getClientOriginalExtension();
+        //     $image->move($destinationPath, $profileImage);
+        //     $add_user['image'] = "$profileImage";
+        // }else{
+        //     $add_user->image = '';
+        // }
 
         $add_user->user_type = 'user';
         $add_user->name = $req->name;
@@ -192,18 +192,21 @@ class AuthController extends Controller
             $user_info = auth()->user();
             $token = auth()->user()->createToken('timer_app')->accessToken;
             $sound = Sound::where('id', 1)->first();
+            $update_token = User::where('id', $id)->update(['remember_token'=> $token]);
             return response()->json(['user_id' => $id,'sound' => $sound, 'account'=> 'Free Account - 3 Timers', 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
         }elseif(auth()->attempt($data) && auth()->user()->account_type == 2){
             $id = auth()->user()->id;
             $user_info = auth()->user();
             $token = auth()->user()->createToken('timer_app')->accessToken;
             $sound = Sound::where('id', 1)->first();
+            $update_token = User::where('id', $id)->update(['remember_token' => $token]);
             return response()->json(['user_id' => $id, 'sound' => $sound, 'account' => 'Subscription - Monthly', 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
         }elseif(auth()->attempt($data) && auth()->user()->account_type == 3) {
             $id = auth()->user()->id;
             $user_info = auth()->user();
             $token = auth()->user()->createToken('timer_app')->accessToken;
             $sound = Sound::where('id', 1)->first();
+            $update_token = User::where('id', $id)->update(['remember_token' => $token]);
             return response()->json(['user_id' => $id, 'sound' => $sound, 'account' => 'Subscription - Yearly', 'user_info' => $user_info, 'token' => $token, 'message' => 'Login successfully.'], 200);
         }else{
             return response()->json(['message' => 'Invalid email & password'], 400);
@@ -255,14 +258,14 @@ class AuthController extends Controller
     public function edit_account_action(Request $req)
     {
         $account_info = auth()->user();
-        if ($image = $req->file('image')) {
-            $destinationPath = 'public/admin/assets/user-profile';
-            $profileImage = rand() . "." . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $profileImage);
-            $account_info['image'] = "$profileImage";
-        }else{
-            $account_info->image = '';
-        }
+        // if ($image = $req->file('image')) {
+        //     $destinationPath = 'public/admin/assets/user-profile';
+        //     $profileImage = rand() . "." . $image->getClientOriginalExtension();
+        //     $image->move($destinationPath, $profileImage);
+        //     $account_info['image'] = "$profileImage";
+        // }else{
+        //     $account_info->image = '';
+        // }
 
         $account_info->user_type = 'user';
         $account_info->account_type = $req->account_type;

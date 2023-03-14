@@ -40,12 +40,12 @@ class UserController extends Controller
       ]);
       $add_user = new User();
 
-      if ($image = $req->file('image')) {
-         $destinationPath = 'public/admin/assets/user-profile';
-         $profileImage = rand() . "." . $image->getClientOriginalExtension();
-         $image->move($destinationPath, $profileImage);
-         $add_user['image'] = "$profileImage";
-      }
+      // if ($image = $req->file('image')) {
+      //    $destinationPath = 'public/admin/assets/user-profile';
+      //    $profileImage = rand() . "." . $image->getClientOriginalExtension();
+      //    $image->move($destinationPath, $profileImage);
+      //    $add_user['image'] = "$profileImage";
+      // }
 
       $add_user->user_type = 'user';
       $add_user->name = $req->name;
@@ -96,12 +96,12 @@ class UserController extends Controller
    //UPDATE USER
    public function edit_user_action(Request $req){
       $update_user = User::find($req->id);
-      if ($image = $req->file('image')) {
-         $destinationPath = 'public/admin/assets/user-profile';
-         $profileImage = rand() . "." . $image->getClientOriginalExtension();
-         $image->move($destinationPath, $profileImage);
-         $update_user['image'] = "$profileImage";
-      }
+      // if ($image = $req->file('image')) {
+      //    $destinationPath = 'public/admin/assets/user-profile';
+      //    $profileImage = rand() . "." . $image->getClientOriginalExtension();
+      //    $image->move($destinationPath, $profileImage);
+      //    $update_user['image'] = "$profileImage";
+      // }
 
       $update_user->user_type = 'user';
       $update_user->name = $req->name;

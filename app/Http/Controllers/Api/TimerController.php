@@ -139,7 +139,14 @@ class TimerController extends Controller
                 $new_timer_seg = new TimerSegment();
                 $new_timer_seg->timer_id = $req->timer_id;
                 $new_timer_seg->segment_name = $req->seg_name[$i];
-                $new_timer_seg->duration = $req->seg_dur[$i];
+                $x = explode(":", $req->seg_dur[$i]);
+                if (sizeof($x) > 1) {
+                    //echo "ok";
+                    $new_timer_seg->duration = $req->seg_dur[$i];
+                } else {
+                    $new_timer_seg->duration = $req->seg_dur[$i] . ":00";
+                }
+                
                 $new_timer_seg->end_sound = $req->seg_end[$i];
                 $new_timer_seg->save();
             }

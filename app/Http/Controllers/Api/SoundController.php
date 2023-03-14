@@ -7,15 +7,28 @@ use App\Models\Sound;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\URL;
 
 class SoundController extends Controller
 {
     //GET ALL SOUND
-    public function sound_list(){
-        $get_sound = Sound::where('status','=',1)->latest()->get();         
-        return response()->json(['get_sound' => $get_sound], 200);
+    public function sound_list(Request $request){
+        $token = $request->bearerToken();
+       // echo $token;die;
+        $get_sound = Sound::where('status','=',1)->get();  
+        $arr['get_sound'] = array();  
+        foreach($get_sound as $sound){
+            $arr1 = [];
+            $arr1['sound_id'] = $sound->id;
+            $arr1['name'] = $sound->sound_name;
+            $arr1['url'] = $sound->file;
+            $query = DB::table('users')->select(DB::raw('case when sound_id = "'.$sound->id.'" then true else false end stf'))->where('remember_token', $token)->first();
+            $arr1['Stat'] = $query->stf;
+            array_push($arr['get_sound'], $arr1);
+        }
+        return response()->json($arr, 200);
     }
 
     //SELECT SOUND
@@ -31,7 +44,7 @@ class SoundController extends Controller
         }else{
             return response()->json(['message' => 'Something went wrong, please try again.']);
         }
-    }
+    } 
 
     
 }
