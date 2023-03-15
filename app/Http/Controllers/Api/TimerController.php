@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Sound;
 use App\Models\Timer;
 use App\Models\TimerSegment;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,41 +15,45 @@ use Illuminate\Support\Facades\URL;
 class TimerController extends Controller
 {
     //GET TIMER LIST
-    public function timer_list()
+    public function timer_list(Request $request)
     {
-        $timer_timeline = Timer::where('user_id', auth()->user()->id)->where('status', '=', 1)->latest()->get();
-        //print_r($timer_timeline);die;
+        $token = $request->bearerToken();
+        $check_token = User::where('remember_token', $token)->first();
+        if($check_token){
+            $timer_timeline = Timer::where('user_id', auth()->user()->id)->where('status', '=', 1)->latest()->get();
+            $timer_segments = [];
 
-        $timer_segments = [];
+            foreach ($timer_timeline as $timer) {
+                $arr = [];
+                if ($timer->favourite == 1) {
+                    $arr['stat'] =  true;
+                } else {
+                    $arr['stat'] = false;
+                }
+                $arr['id'] = $timer->id;
+                $arr['timer_title'] = $timer->timer_title;
+                $arr['timer_subhead'] = $timer->timer_subhead;
+                $arr['start_sound'] = $timer->start_sound;
 
-        foreach ($timer_timeline as $timer) {
-            $arr = [];
-            if ($timer->favourite == 1) {
-                $arr['stat'] =  true;
-            } else {
-                $arr['stat'] = false;
+                $obj = TimerSegment::where("timer_id", $timer->id)->get();
+
+                $minutes = 0;
+                foreach ($obj as $value) {
+                    list($hour, $minute) = explode(':', $value->duration);
+                    $minutes += $hour * 60;
+                    $minutes += $minute;
+                }
+                $hours = floor($minutes / 60);
+                $minutes -= $hours * 60;
+                $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+                $arr['duration'] = $total_dur;
+                array_push($timer_segments, $arr);
             }
-            $arr['id'] = $timer->id;
-            $arr['timer_title'] = $timer->timer_title;
-            $arr['timer_subhead'] = $timer->timer_subhead;
-            $arr['start_sound'] = $timer->start_sound;
-
-            $obj = TimerSegment::where("timer_id", $timer->id)->get();
-
-            $minutes = 0;
-            foreach ($obj as $value) {
-                list($hour, $minute) = explode(':', $value->duration);
-                $minutes += $hour * 60;
-                $minutes += $minute;
-            }
-            $hours = floor($minutes / 60);
-            $minutes -= $hours * 60;
-            $total_dur = sprintf('%02d:%02d', $hours, $minutes);
-            $arr['duration'] = $total_dur;
-            array_push($timer_segments, $arr);
+            return response()->json(['timer_segments' => $timer_segments], 200);
+        }else{
+            return response()->json(['timer_segments' => 'You are unauthorized.'], 400);
         }
-
-        return response()->json(['timer_segments' => $timer_segments], 200);
+        
     }
 
     //TIMER DETAILS

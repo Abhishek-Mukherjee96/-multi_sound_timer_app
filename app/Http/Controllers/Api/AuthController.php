@@ -216,9 +216,6 @@ class AuthController extends Controller
     //USER INFO
     public function user_info(Request $request)
     {
-        $token = $request->bearerToken();
-        $check_token = User::where('remember_token', $token)->first();
-        if($check_token){
             $user_info = auth()->user();
             $account_type = $user_info->account_type;
             $find_us = $user_info->find_us;
@@ -248,9 +245,6 @@ class AuthController extends Controller
                 $image = '';
             }
             return response()->json(['image' => $image, 'user_info' => $user_info, 'card_number' => $card_number, 'security_code' => $security_code, 'expiry_date' => $expiry_date, 'account_type' => $account, 'find_us' => $find_us], 200);
-        }else{
-            return response()->json(['message' => 'You are not authorized.'], 400);
-        }
         
     }
 
