@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CollectionController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\SoundController;
 use App\Http\Controllers\Api\TimerController as ApiTimerController;
@@ -40,5 +41,11 @@ Route::middleware('auth:api')->group(function(){
     //SOUND ROUTE
     Route::get('sound-list',[SoundController::class,'sound_list'])->name('sound_list');
     Route::post('select-sound', [SoundController::class,'select_sound'])->name('select_sound');
+
+    //COLLECTION ROUTE
+    Route::get('/collection-list', [CollectionController::class, 'collection_list'])->name('collection_list');
+    Route::post('/add-collection', [CollectionController::class, 'add_collection'])->name('add_collection');
+    Route::post('/update-collection', [CollectionController::class, 'update_collection'])->name('update_collection');
+
 
 });

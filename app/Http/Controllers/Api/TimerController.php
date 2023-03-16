@@ -19,14 +19,14 @@ class TimerController extends Controller
     {
         $token = $request->bearerToken();
         $check_token = User::where('remember_token', $token)->first();
-        if($check_token){
+        if ($check_token) {
             $timer_timeline = Timer::where('user_id', auth()->user()->id)->where('status', '=', 1)->latest()->get();
             $timer_segments = [];
 
             foreach ($timer_timeline as $timer) {
                 $arr = [];
                 if ($timer->favourite == 1) {
-                    $arr['stat'] =  true;
+                    $arr['stat'] = true;
                 } else {
                     $arr['stat'] = false;
                 }
@@ -36,7 +36,6 @@ class TimerController extends Controller
                 $arr['start_sound'] = $timer->start_sound;
 
                 $obj = TimerSegment::where("timer_id", $timer->id)->get();
-
                 $minutes = 0;
                 foreach ($obj as $value) {
                     list($hour, $minute) = explode(':', $value->duration);
@@ -50,7 +49,7 @@ class TimerController extends Controller
                 array_push($timer_segments, $arr);
             }
             return response()->json(['timer_segments' => $timer_segments], 200);
-        }else{
+        } else {
             return response()->json(['timer_segments' => 'You are unauthorized.'], 400);
         }
         
@@ -87,37 +86,108 @@ class TimerController extends Controller
     //ADD TIMER
     public function add_timer_action(Request $req)
     {
-        // dd($req->all());
-        $add_timer = new Timer();
+        $timer = Timer::where('user_id',auth()->user()->id)->where('status',1)->get();
+        $no_of_timer = count($timer);
+        $user = auth()->user();
+        if ($user->account_type == 1 && $no_of_timer != 3) {
+            $add_timer = new Timer();
+            $add_timer->user_id = auth()->user()->id;
+            $add_timer->timer_title = $req->timer_title;
+            $add_timer->timer_subhead = $req->timer_subhead;
+            $add_timer->start_sound = $req->start_sound;
+            $add_timer->status = 1;
+            $add_timer->favourite = 0;
+            $add_timer->save();
 
-        $add_timer->user_id = auth()->user()->id;
-        $add_timer->timer_title = $req->timer_title;
-        $add_timer->timer_subhead = $req->timer_subhead;
-        $add_timer->start_sound = $req->start_sound;
-        $add_timer->status = 1;
-        $add_timer->favourite = 0;
-        $add_timer->save();
-        //print_r($req->addmore);die;
+            for ($i = 0; $i < sizeof($req->seg_name); $i++) {
 
-        for ($i = 0; $i < sizeof($req->seg_name); $i++) {
-
-            $add_timers = new TimerSegment();
-            $x = explode(":", $req->seg_dur[$i]);
-            $add_timers->timer_id =  $add_timer->id;
-            $add_timers->segment_name = $req->seg_name[$i];
-            if(sizeof($x) > 1){
-                //echo "ok";
-                $add_timers->duration = $req->seg_dur[$i]; 
-            }else{
-                $add_timers->duration = $req->seg_dur[$i] . ":00";
+                $add_timers = new TimerSegment();
+                $x = explode(":", $req->seg_dur[$i]);
+                $add_timers->timer_id =  $add_timer->id;
+                $add_timers->segment_name = $req->seg_name[$i];
+                if (sizeof($x) > 1) {
+                    $add_timers->duration = $req->seg_dur[$i];
+                } else {
+                    $add_timers->duration = $req->seg_dur[$i] . ":00";
+                }
+                $add_timers->end_sound = $req->seg_end[$i];
+                $add_timers->save();
             }
-            $add_timers->end_sound = $req->seg_end[$i];
-            $add_timers->save();
-        }
 
-        return response()->json([
-            'success' => true, 'message' => 'Timer Added Successfully.'
-        ]);
+            return response()->json([
+                'success' => true, 'message' => 'Timer Added Successfully.'
+            ]);
+        } elseif ($user->account_type == 2 && $no_of_timer != 30) {
+            $add_timer = new Timer();
+            $add_timer->user_id = auth()->user()->id;
+            $add_timer->timer_title = $req->timer_title;
+            $add_timer->timer_subhead = $req->timer_subhead;
+            $add_timer->start_sound = $req->start_sound;
+            $add_timer->status = 1;
+            $add_timer->favourite = 0;
+            $add_timer->save();
+
+            for ($i = 0; $i < sizeof($req->seg_name); $i++) {
+
+                $add_timers = new TimerSegment();
+                $x = explode(":", $req->seg_dur[$i]);
+                $add_timers->timer_id =  $add_timer->id;
+                $add_timers->segment_name = $req->seg_name[$i];
+                if (sizeof($x) > 1) {
+                    $add_timers->duration = $req->seg_dur[$i];
+                } else {
+                    $add_timers->duration = $req->seg_dur[$i] . ":00";
+                }
+                $add_timers->end_sound = $req->seg_end[$i];
+                $add_timers->save();
+            }
+
+            return response()->json([
+                'success' => true, 'message' => 'Timer Added Successfully.'
+            ]);
+        } elseif ($user->account_type == 3 && $no_of_timer != 30) {
+            $add_timer = new Timer();
+            $add_timer->user_id = auth()->user()->id;
+            $add_timer->timer_title = $req->timer_title;
+            $add_timer->timer_subhead = $req->timer_subhead;
+            $add_timer->start_sound = $req->start_sound;
+            $add_timer->status = 1;
+            $add_timer->favourite = 0;
+            $add_timer->save();
+
+            for ($i = 0; $i < sizeof($req->seg_name); $i++) {
+
+                $add_timers = new TimerSegment();
+                $x = explode(":", $req->seg_dur[$i]);
+                $add_timers->timer_id =  $add_timer->id;
+                $add_timers->segment_name = $req->seg_name[$i];
+                if (sizeof($x) > 1) {
+                    $add_timers->duration = $req->seg_dur[$i];
+                } else {
+                    $add_timers->duration = $req->seg_dur[$i] . ":00";
+                }
+                $add_timers->end_sound = $req->seg_end[$i];
+                $add_timers->save();
+            }
+
+            return response()->json([
+                'success' => true, 'message' => 'Timer Added Successfully.'
+            ]);
+        } else {
+            if ($user->account_type == 1 && $no_of_timer == 3) {
+                return response()->json([
+                    'status' => false, 'message' => 'You are not allowed to create more than 3 timers.'
+                ]);
+            } elseif ($user->account_type == 2 && $no_of_timer == 30) {
+                return response()->json([
+                    'status' => false, 'message' => 'You are not allowed to create more than 30 timers.'
+                ]);
+            } elseif ($user->account_type == 3 && $no_of_timer == 30) {
+                return response()->json([
+                    'status' => false, 'message' => 'You are not allowed to create more than 30 timers.'
+                ]);
+            }
+        }
     }
 
     //UPDATE TIMER

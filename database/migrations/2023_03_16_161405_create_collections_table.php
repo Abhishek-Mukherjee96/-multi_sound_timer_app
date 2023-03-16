@@ -13,15 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('timers', function (Blueprint $table) {
+        Schema::create('collections', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('timer_title');
-            $table->string('timer_subhead');
-            $table->string('start_sound');
-            $table->string('status');
-            $table->string('collections_id');
-            $table->string('favourite');
+            $table->string('collection_name');
+            $table->string('status')->comment("1 = active, 0 = inactive");
             $table->timestamps();
         });
     }
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('timers');
+        Schema::dropIfExists('collections');
     }
 };
