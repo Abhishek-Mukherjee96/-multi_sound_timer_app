@@ -33,6 +33,7 @@ class CollectionController extends Controller
                 $add_collection->collection_name = $req->collection_name[$i];
                 $add_collection->status = 1;
                 $add_collection->flag = 0;
+                $add_collection->timers_id = '';
                 $add_collection->save();
             }
             return response()->json([
