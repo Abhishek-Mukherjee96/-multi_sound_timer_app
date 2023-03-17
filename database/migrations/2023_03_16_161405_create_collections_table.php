@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('collection_name');
             $table->string('status')->comment("1 = active, 0 = inactive");
+            $table->integer('flag');
             $table->timestamps();
         });
     }
