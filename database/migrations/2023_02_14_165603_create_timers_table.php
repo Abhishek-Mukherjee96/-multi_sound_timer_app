@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('timer_subhead');
             $table->string('start_sound');
             $table->string('status');
-            $table->string('collections_id');
             $table->integer('flag');
             $table->string('favourite');
             $table->timestamps();
