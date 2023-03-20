@@ -46,6 +46,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/collection-list', [CollectionController::class, 'collection_list'])->name('collection_list');
     Route::post('/add-collection', [CollectionController::class, 'add_collection'])->name('add_collection');
     Route::post('/update-collection', [CollectionController::class, 'update_collection'])->name('update_collection');
+    Route::get('/timer-playlist', [CollectionController::class, 'timer_playlist'])->name('timer_playlist');
 
 
 });

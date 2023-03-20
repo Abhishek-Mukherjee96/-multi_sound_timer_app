@@ -19,8 +19,11 @@ class TimerController extends Controller
     {
         $token = $request->bearerToken();
         $check_token = User::where('remember_token', $token)->first();
+       
         if ($check_token) {
+            //echo auth()->user()->id;die;
             $timer_timeline = Timer::where('user_id', auth()->user()->id)->where('status', '=', 1)->latest()->get();
+            //print_r($timer_timeline);die;
             $timer_segments = [];
 
             foreach ($timer_timeline as $timer) {
