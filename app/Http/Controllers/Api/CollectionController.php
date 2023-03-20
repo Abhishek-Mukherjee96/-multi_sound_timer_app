@@ -74,82 +74,89 @@ class CollectionController extends Controller
     }
 
     //TIMER PLAYLIST
-    public function timer_playlist()
+    public function timer_playlist(Request $req)
     {
-        $collections = Collection::where('collections.flag', 1)->join('users', 'users.id', '=', 'collections.user_id')->where('collections.user_id', auth()->user()->id)->get();
-        $Arr['collections'] = array();
-        $Arr1['only_timers'] = array();
-        $ARR['final'] = array();
-        foreach ($collections as $collection) {
+        $token = $req->bearerToken();
+        $check_token = User::where('remember_token', $token)->first();
+        if($check_token){
+            $collections = Collection::where('collections.flag', 1)->join('users', 'users.id', '=', 'collections.user_id')->where('collections.user_id', auth()->user()->id)->get();
+            $Arr['collections'] = array();
+            $Arr1['only_timers'] = array();
+            $ARR['final'] = array();
+            foreach ($collections as $collection) {
 
-            $arr1['Timer'] = array();
-            $timer_ids = explode(',', $collection->timers_id);
-            $arr1['name'] = $collection->collection_name;
-            $arr1['status'] = $collection->status;
-            $arr1['flag'] = $collection->flag;
+                $arr1['Timer'] = array();
+                $timer_ids = explode(',', $collection->timers_id);
+                $arr1['name'] = $collection->collection_name;
+                $arr1['status'] = $collection->status;
+                $arr1['flag'] = $collection->flag;
 
-            foreach ($timer_ids as $id) {
+                foreach ($timer_ids as $id) {
 
-                $check_timer_id = Timer::where('id', $id)->get();
-                foreach ($check_timer_id as $timer_id) {
-                    $arr2 = [];
-                    if ($timer_id->favourite == 1) {
-                        $arr2['stat'] = true;
-                    } else {
-                        $arr2['stat'] = false;
+                    $check_timer_id = Timer::where('id', $id)->get();
+                    foreach ($check_timer_id as $timer_id) {
+                        $arr2 = [];
+                        if ($timer_id->favourite == 1) {
+                            $arr2['stat'] = true;
+                        } else {
+                            $arr2['stat'] = false;
+                        }
+                        $arr2['id'] = $timer_id->id;
+                        $arr2['timer_title'] = $timer_id->timer_title;
+                        $arr2['timer_subhead'] = $timer_id->timer_subhead;
+                        $arr2['start_sound'] = $timer_id->start_sound;
+
+                        $obj = TimerSegment::where("timer_id", $timer_id->id)->get();
+                        $minutes = 0;
+                        foreach ($obj as $value) {
+                            list($hour, $minute) = explode(':', $value->duration);
+                            $minutes += $hour * 60;
+                            $minutes += $minute;
+                        }
+                        $hours = floor($minutes / 60);
+                        $minutes -= $hours * 60;
+                        $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+                        $arr2['duration'] = $total_dur;
+                        array_push($arr1['Timer'], $arr2);
                     }
-                    $arr2['id'] = $timer_id->id;
-                    $arr2['timer_title'] = $timer_id->timer_title;
-                    $arr2['timer_subhead'] = $timer_id->timer_subhead;
-                    $arr2['start_sound'] = $timer_id->start_sound;
-
-                    $obj = TimerSegment::where("timer_id", $timer_id->id)->get();
-                    $minutes = 0;
-                    foreach ($obj as $value) {
-                        list($hour, $minute) = explode(':', $value->duration);
-                        $minutes += $hour * 60;
-                        $minutes += $minute;
-                    }
-                    $hours = floor($minutes / 60);
-                    $minutes -= $hours * 60;
-                    $total_dur = sprintf('%02d:%02d', $hours, $minutes);
-                    $arr2['duration'] = $total_dur;
-                    array_push($arr1['Timer'], $arr2);
                 }
+
+                array_push($Arr['collections'], $arr1);
             }
 
-            array_push($Arr['collections'], $arr1);
+            $check_timer = Timer::where('timers.flag', 0)->join('users', 'users.id', '=', 'timers.user_id')->where('users.id', auth()->user()->id)->get();
+            foreach ($check_timer as $timer) {
+                $arr3 = [];
+                if ($timer->favourite == 1) {
+                    $arr3['stat'] = true;
+                } else {
+                    $arr3['stat'] = false;
+                }
+                $arr3['id'] = $timer->id;
+                $arr3['timer_title'] = $timer->timer_title;
+                $arr3['timer_subhead'] = $timer->timer_subhead;
+                $arr3['start_sound'] = $timer->start_sound;
+
+                $obj = TimerSegment::where("timer_id", $timer->id)->get();
+                $minutes = 0;
+                foreach ($obj as $value) {
+                    list($hour, $minute) = explode(':', $value->duration);
+                    $minutes += $hour * 60;
+                    $minutes += $minute;
+                }
+                $hours = floor($minutes / 60);
+                $minutes -= $hours * 60;
+                $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+                $arr3['duration'] = $total_dur;
+
+                array_push($Arr1['only_timers'], $arr3);
+            }
+            $ARR = array_merge($Arr, $Arr1);
+            return response()->json($ARR);
+        }else{
+            return response()->json(['message' => 'You are unauthorised.']);
         }
-
-        $check_timer = Timer::where('timers.flag', 0)->join('users', 'users.id', '=', 'timers.user_id')->where('users.id', auth()->user()->id)->get();
-        foreach ($check_timer as $timer) {
-            $arr3 = [];
-            if ($timer->favourite == 1) {
-                $arr3['stat'] = true;
-            } else {
-                $arr3['stat'] = false;
-            }
-            $arr3['id'] = $timer->id;
-            $arr3['timer_title'] = $timer->timer_title;
-            $arr3['timer_subhead'] = $timer->timer_subhead;
-            $arr3['start_sound'] = $timer->start_sound;
-
-            $obj = TimerSegment::where("timer_id", $timer->id)->get();
-            $minutes = 0;
-            foreach ($obj as $value) {
-                list($hour, $minute) = explode(':', $value->duration);
-                $minutes += $hour * 60;
-                $minutes += $minute;
-            }
-            $hours = floor($minutes / 60);
-            $minutes -= $hours * 60;
-            $total_dur = sprintf('%02d:%02d', $hours, $minutes);
-            $arr3['duration'] = $total_dur;
-
-            array_push($Arr1['only_timers'], $arr3);
-        }
-        $ARR = array_merge($Arr, $Arr1);
-        return response()->json($ARR);
+        
     }
 
     //GET THE LAST QUERY
