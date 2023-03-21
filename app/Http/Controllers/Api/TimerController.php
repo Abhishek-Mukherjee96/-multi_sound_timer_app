@@ -73,6 +73,17 @@ class TimerController extends Controller
             $timer_segments['start_sound'] = $timer_timeline->start_sound;
             //$timer_segments['file'] = $timer_timeline->file;
             //return $timer_segments;die;
+            $obj = TimerSegment::where("timer_id", $timer_timeline->id)->get();
+            $minutes = 0;
+            foreach ($obj as $value) {
+                list($hour, $minute) = explode(':', $value->duration);
+                $minutes += $hour * 60;
+                $minutes += $minute;
+            }
+            $hours = floor($minutes / 60);
+            $minutes -= $hours * 60;
+            $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+            $timer_segments['duration'] = $total_dur;
 
             $obj = TimerSegment::select('timer_segments.id', 'timer_segments.segment_name', 'timer_segments.duration', 'timer_segments.end_sound', 'sounds.file')->join('sounds', 'sounds.id', '=', 'timer_segments.end_sound')->where("timer_segments.timer_id", $timer_timeline->id)->get();
 
