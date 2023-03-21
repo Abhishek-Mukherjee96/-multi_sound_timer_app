@@ -56,7 +56,7 @@
                                         <li><a href="{{route('user')}}" class="slide-item">User List</a></li>
                                     </ul>
                                 </li>
-                                <li class="side-item side-item-category">Manage Timer</li>
+                                {{--<li class="side-item side-item-category">Manage Timer</li>
                                 <li class="slide">
                                     <a class="side-menu__item" data-toggle="slide" href="index-2.html#">
                                         <svg class="side-menu__icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -68,7 +68,7 @@
                                         <li><a href="{{route('timer_list')}}" class="slide-item">Timer List</a></li>
                                         <li><a href="{{route('sound_list')}}" class="slide-item">Sound List</a></li>
                                     </ul>
-                                </li>
+                                </li>--}}
                             </ul>
                         </aside>
                         @endif
