@@ -80,6 +80,7 @@ class CollectionController extends Controller
         $check_token = User::where('remember_token', $token)->first();
         if($check_token){
             $collections = Collection::where('collections.flag', 1)->join('users', 'users.id', '=', 'collections.user_id')->where('collections.user_id', auth()->user()->id)->get();
+            //return response()->json($collections);
             $Arr['collections'] = array();
             $Arr1['only_timers'] = array();
             $ARR['final'] = array();

@@ -117,7 +117,7 @@ class TimerController extends Controller
             $add_timer->start_sound = $req->start_sound;
             $add_timer->status = 1;
             $add_timer->favourite = 0;
-            $add_timer->collections_id = 0;
+            $add_timer->flag = 0;
             $add_timer->save();
 
             for ($i = 0; $i < sizeof($req->seg_name); $i++) {
@@ -146,7 +146,7 @@ class TimerController extends Controller
             $add_timer->start_sound = $req->start_sound;
             $add_timer->status = 1;
             $add_timer->favourite = 0;
-            $add_timer->collections_id = 0;
+            $add_timer->flag = 0;
             $add_timer->save();
 
             for ($i = 0; $i < sizeof($req->seg_name); $i++) {
@@ -175,7 +175,7 @@ class TimerController extends Controller
             $add_timer->start_sound = $req->start_sound;
             $add_timer->status = 1;
             $add_timer->favourite = 0;
-            $add_timer->collections_id = 0;
+            $add_timer->flag = 0;
             $add_timer->save();
 
             for ($i = 0; $i < sizeof($req->seg_name); $i++) {
@@ -222,6 +222,8 @@ class TimerController extends Controller
             "start_sound" => $req->start_sound,
             "status" => 1,
             "favourite" => 0,
+            'flag' => 0
+
         ]);
 
         for ($i = 0; $i < sizeof($req->old_seg_name); $i++) {
