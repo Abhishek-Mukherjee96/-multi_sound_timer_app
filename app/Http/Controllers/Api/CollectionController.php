@@ -94,6 +94,7 @@ class CollectionController extends Controller
                 foreach ($timer_ids as $id) {
 
                     $check_timer_id = Timer::where('id', $id)->get();
+                                        
                     foreach ($check_timer_id as $timer_id) {
                         $arr2 = [];
                         if ($timer_id->favourite == 1) {
@@ -124,7 +125,8 @@ class CollectionController extends Controller
                 array_push($Arr['collections'], $arr1);
             }
 
-            $check_timer = Timer::where('timers.flag', 0)->join('users', 'users.id', '=', 'timers.user_id')->where('users.id', auth()->user()->id)->get();
+            $check_timer = Timer::select('timers.id as timer_id', 'timers.timer_title', 'timers.timer_subhead', 'timers.start_sound')->where('timers.flag', 0)->join('users', 'users.id', '=', 'timers.user_id')->where('users.id', auth()->user()->id)->get();
+            //return response()->json($check_timer);
             foreach ($check_timer as $timer) {
                 $arr3 = [];
                 if ($timer->favourite == 1) {
@@ -132,12 +134,12 @@ class CollectionController extends Controller
                 } else {
                     $arr3['stat'] = false;
                 }
-                $arr3['id'] = $timer->id;
+                $arr3['id'] = $timer->timer_id;
                 $arr3['timer_title'] = $timer->timer_title;
                 $arr3['timer_subhead'] = $timer->timer_subhead;
                 $arr3['start_sound'] = $timer->start_sound;
 
-                $obj = TimerSegment::where("timer_id", $timer->id)->get();
+                $obj = TimerSegment::where("timer_id", $timer->timer_id)->get();
                 $minutes = 0;
                 foreach ($obj as $value) {
                     list($hour, $minute) = explode(':', $value->duration);
