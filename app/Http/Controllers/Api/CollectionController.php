@@ -159,7 +159,6 @@ class CollectionController extends Controller
         }else{
             return response()->json(['message' => 'You are unauthorised.']);
         }
-        
     }
 
     //GET THE LAST QUERY
