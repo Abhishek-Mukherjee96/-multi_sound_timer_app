@@ -253,7 +253,6 @@ class TimerController extends Controller
         }else{
             
         }
- 
         return response()->json([
                 'success' => true, 'message' => 'Timer Updated Successfully.'
             ]);
