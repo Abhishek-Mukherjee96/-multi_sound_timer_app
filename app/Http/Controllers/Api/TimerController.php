@@ -65,7 +65,7 @@ class TimerController extends Controller
         $check_token = User::where('remember_token',$token)->first();
         if($check_token){
             $timer_timeline = Timer::select('timers.id', 'timers.timer_title', 'timers.timer_subhead', 'timers.start_sound')->where('timers.id', '=', $req->id)->first();
-            // print_r($timer_timeline);
+            //print_r($timer_timeline);
             $timer_segments['fragments'] = array();
 
             $timer_segments['timer_title'] = $timer_timeline->timer_title;
@@ -82,6 +82,8 @@ class TimerController extends Controller
             }
             $hours = floor($minutes / 60);
             $minutes -= $hours * 60;
+            $seks = (($hours * 60) + $minutes) * 60;
+
             $total_dur = sprintf('%02d:%02d', $hours, $minutes);
             $timer_segments['duration'] = $total_dur;
 
@@ -92,6 +94,12 @@ class TimerController extends Controller
                 $arr1['id'] = $val->id;
                 $arr1['name'] = $val->segment_name;
                 $arr1['duration'] = $val->duration;
+                $rr = explode(':', $val->duration); //convert a string into an array
+                $h = $rr[0];
+                $m = $rr[1];
+                $sec = (($h*60)+$m)*60; //convert hours & minutes into second
+                $arr1['secc'] = $sec;
+                $arr1['perc'] = round(($sec/ $seks)*100); //return the rounded value
                 $arr1['sound_name'] = $val->end_sound;
                 $arr1['file'] = $val->file;
                 array_push($timer_segments['fragments'], $arr1);
@@ -132,7 +140,7 @@ class TimerController extends Controller
                     $add_timers->duration = $req->seg_dur[$i] . ":00";
                 }
                 $add_timers->end_sound = $req->seg_end[$i];
-                $add_timers->save();
+                $add_timers->save();   
             }
 
             return response()->json([
