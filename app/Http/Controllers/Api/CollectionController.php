@@ -78,9 +78,8 @@ class CollectionController extends Controller
     {
         $token = $req->bearerToken();
         $check_token = User::where('remember_token', $token)->first();
-        if($check_token){
-            $collections = Collection::where('collections.flag', 1)->join('users', 'users.id', '=', 'collections.user_id')->where('collections.user_id', auth()->user()->id)->get();
-            //return response()->json($collections);
+        if ($check_token) {
+            $collections = Collection::where('collections.flag', 1)->where('collections.timers_id', '!=', '')->join('users', 'users.id', '=', 'collections.user_id')->where('collections.user_id', auth()->user()->id)->get();
             $Arr['collections'] = array();
             $Arr1['only_timers'] = array();
             $ARR['final'] = array();
@@ -94,8 +93,8 @@ class CollectionController extends Controller
 
                 foreach ($timer_ids as $id) {
 
-                    $check_timer_id = Timer::where('id', $id)->get();
-                                        
+                    $check_timer_id = Timer::where('id', $id)->where('status', 1)->get();
+
                     foreach ($check_timer_id as $timer_id) {
                         $arr2 = [];
                         if ($timer_id->favourite == 1) {
@@ -126,7 +125,7 @@ class CollectionController extends Controller
                 array_push($Arr['collections'], $arr1);
             }
 
-            $check_timer = Timer::select('timers.id as timer_id', 'timers.timer_title', 'timers.timer_subhead', 'timers.start_sound')->where('timers.flag', 0)->join('users', 'users.id', '=', 'timers.user_id')->where('users.id', auth()->user()->id)->get();
+            $check_timer = Timer::select('timers.id as timer_id', 'timers.timer_title', 'timers.timer_subhead', 'timers.start_sound')->where('timers.flag', 0)->where('timers.status', 1)->join('users', 'users.id', '=', 'timers.user_id')->where('users.id', auth()->user()->id)->get();
             //return response()->json($check_timer);
             foreach ($check_timer as $timer) {
                 $arr3 = [];
@@ -141,6 +140,7 @@ class CollectionController extends Controller
                 $arr3['start_sound'] = $timer->start_sound;
 
                 $obj = TimerSegment::where("timer_id", $timer->timer_id)->get();
+                //return response()->json($obj);
                 $minutes = 0;
                 foreach ($obj as $value) {
                     list($hour, $minute) = explode(':', $value->duration);
@@ -150,13 +150,14 @@ class CollectionController extends Controller
                 $hours = floor($minutes / 60);
                 $minutes -= $hours * 60;
                 $total_dur = sprintf('%02d:%02d', $hours, $minutes);
+                // echo $total_dur;
                 $arr3['duration'] = $total_dur;
 
                 array_push($Arr1['only_timers'], $arr3);
             }
             $ARR = array_merge($Arr, $Arr1);
             return response()->json($ARR);
-        }else{
+        } else {
             return response()->json(['message' => 'You are unauthorised.']);
         }
     }
