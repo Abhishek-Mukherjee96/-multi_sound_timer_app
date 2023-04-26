@@ -39,6 +39,7 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/notification-action',[NotificationController::class,'notification_action'])->name('notification_action');
 
     //SOUND ROUTE
+    Route::get('sound-cat',[SoundController::class,'sound_cat'])->name('sound_cat');
     Route::get('sound-list',[SoundController::class,'sound_list'])->name('sound_list');
     Route::post('select-sound', [SoundController::class,'select_sound'])->name('select_sound');
 
