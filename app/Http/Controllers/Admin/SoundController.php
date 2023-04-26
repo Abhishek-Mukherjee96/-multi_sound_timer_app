@@ -19,7 +19,8 @@ class SoundController extends Controller
 
     //ADD SOUND
     public function add_sound(){
-        return view('admin.sound.add');
+        $get_sound_cat = SoundCategory::where('status',1)->latest()->get();
+        return view('admin.sound.add',compact('get_sound_cat'));
     }
 
     //ADD SOUND ACTION
@@ -35,8 +36,8 @@ class SoundController extends Controller
             $sound->move($destinationPath, $profileImage);
             $add_sound['file'] = "$profileImage";
         }
+        $add_sound->cat_id = $req->cat_id;
         $add_sound->sound_name = $req->sound_name;
-        $add_sound->file = URL::to('/') . '/public/admin/assets/sound-list/' . $add_sound['file'];
         $add_sound->status = 1;
 
         if ($add_sound->save()) {
@@ -51,7 +52,8 @@ class SoundController extends Controller
     //EDIT SOUND ACTION
     public function edit_sound($id){
         $edit_sound = Sound::find($id);
-        return view('admin.sound.edit',compact('edit_sound'));
+        $get_sound_cat = SoundCategory::where('status', 1)->latest()->get();
+        return view('admin.sound.edit',compact('edit_sound', 'get_sound_cat'));
     }
 
     //UPDATE SOUND 
@@ -63,8 +65,8 @@ class SoundController extends Controller
             $sound->move($destinationPath, $profileImage);
             $update_sound['file'] = "$profileImage";
         }
+        $update_sound->cat_id = $req->cat_id;
         $update_sound->sound_name = $req->sound_name;
-        $update_sound->file = URL::to('/') . '/public/admin/assets/sound-list/' . $update_sound['file'];
         $update_sound->status = 1;
 
         if ($update_sound->save()) {
