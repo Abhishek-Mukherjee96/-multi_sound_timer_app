@@ -35,6 +35,40 @@ class SoundController extends Controller
         }
         
     }
+    
+    //CATEGORY WISE SOUND LIST
+    public function sound_cat(Request $request)
+    {
+        $token = $request->bearerToken();
+        $check_token = User::where('remember_token', $token)->first();
+        if ($check_token) {
+
+            $categorys = SoundCategory::where('status', 1)->get();
+            $arr['category'] = array();
+
+            foreach ($categorys as $category) {
+                $arr1['sounds'] = array();
+                $id = $category->id;
+                $arr1['category_name'] = $category->name;
+
+                $sound_ids = Sound::where('cat_id', $id)->where('sounds.cat_id', '!=', '')->get();
+
+                foreach ($sound_ids as $sound_id) {
+                    $arr2 = [];
+                    $arr2['sound_id'] = $sound_id->id;
+                    $arr2['name'] = $sound_id->sound_name;
+                    $arr2['url'] = URL::to('/') . '/public/admin/assets/sound-list/' . $sound_id->file;
+
+                    array_push($arr1['sounds'], $arr2);
+                }
+                array_push($arr['category'], $arr1);
+            }
+            return response()->json($arr);
+        } else {
+            return response()->json(['message' => 'You are unauthorised.']);
+        }
+        
+    }
 
     //SELECT SOUND
     public function select_sound(Request $req){
