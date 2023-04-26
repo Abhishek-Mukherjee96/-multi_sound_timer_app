@@ -43,7 +43,9 @@
                                             <thead>
                                                 <tr>
                                                     <th class="wd-15p border-bottom-0">#</th>
+                                                    <th class="wd-15p border-bottom-0">Sound Name</th>
                                                     <th class="wd-15p border-bottom-0">Sound</th>
+                                                    <th class="wd-15p border-bottom-0">Category</th>
                                                     <th class="wd-15p border-bottom-0">Status</th>
                                                     <th class="wd-20p border-bottom-0">Action</th>
                                                 </tr>
@@ -53,11 +55,16 @@
                                                 @foreach($get_sound as $list)
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
+                                                    <td>{{$list->sound_name}}</td>
                                                     <td>
                                                         <audio controls>
-                                                            <source src="{{asset($list->file)}}" type="audio/mpeg">
+                                                            <source src="{{asset('public/admin/assets/sound-list/'.$list->file)}}" type="audio/mpeg">
                                                         </audio>
                                                     </td>
+                                                    @php
+                                                    $cat_name = DB::table('sound_categories')->where('id',$list->cat_id)->first();
+                                                    @endphp
+                                                    <td>{{$cat_name->name}}</td>
                                                     <td>
                                                         @if($list->status == '1')
                                                         <a href="{{route('edit_sound_status', $list->id)}}" class="btn btn-success btn-sm">Active</a>
