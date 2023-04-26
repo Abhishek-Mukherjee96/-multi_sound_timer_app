@@ -34,14 +34,26 @@
                                 <form action="{{route('add_sound_action')}}" enctype="multipart/form-data" method="post">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <label><strong>Sound Name</strong> <span class="required_star">*</span></label>
                                             <input class="form-control mb-4" type="text" name="sound_name">
                                             @error('sound_name')
                                             <span class="text text-danger">{{$message}}</span>
                                             @enderror
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-4 mb-3">
+                                            <label><strong>Category</strong> <span class="required_star">*</span></label>
+                                            <select class="form-control" name="cat_id">
+                                                <option value="" disabled selected>Select One</option>
+                                                @foreach($get_sound_cat as $list)
+                                                <option value="{{$list->id}}">{{$list->name}}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('cat_id')
+                                            <span class="text text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4 mb-3">
                                             <label><strong>Upload Sound</strong> <span class="required_star">*</span></label>
                                             <input class="form-control mb-4" type="file" name="file">
                                             @error('file')
